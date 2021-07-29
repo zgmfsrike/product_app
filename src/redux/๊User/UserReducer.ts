@@ -1,9 +1,4 @@
-import {
-  UPDATE_USER_INFO,
-  ADD_USER,
-  UserActionTypes,
-  UserState,
-} from './UserType';
+import {UPDATE_USER_INFO, UserActionTypes, UserState} from './UserType';
 
 //**reducer will do only update or get state
 //**logic will be in feature containers

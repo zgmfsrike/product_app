@@ -2,11 +2,17 @@ export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
 //**define product interface, init state and action
 
 export interface User {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
-  image: string;
+  picture: string;
   isActive?: boolean;
+}
+
+export interface UserStatus {
+  id: string;
+  isActive: boolean;
 }
 
 export interface UserState {

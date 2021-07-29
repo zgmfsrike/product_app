@@ -10,111 +10,65 @@ import {
   Switch,
   ActivityIndicator,
 } from 'react-native';
+import {getUserService} from '../../api/UserAPI';
+import {User} from '../../redux/๊User/UserType';
 
 class UserScreen extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
       user: [],
+      userStatus: [],
       isRefreshing: false,
       isLoading: false,
+      limit: 10,
       page: 1,
     };
   }
-  componentDidMount() {
-    const data = [
-      {
-        firstName: 'Kritsanah',
-        lastName: 'Supphasri',
-        email: 'kritsanah@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'TESTF',
-        lastName: 'TESTL',
-        email: 'testL@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'Kritsanah',
-        lastName: 'Supphasri',
-        email: 'kritsanah@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'TESTF',
-        lastName: 'TESTL',
-        email: 'testL@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'Kritsanah',
-        lastName: 'Supphasri',
-        email: 'kritsanah@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'TESTF',
-        lastName: 'TESTL',
-        email: 'testL@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'Kritsanah',
-        lastName: 'Supphasri',
-        email: 'kritsanah@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'TESTF',
-        lastName: 'TESTL',
-        email: 'testL@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'Kritsanah',
-        lastName: 'Supphasri',
-        email: 'kritsanah@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'TESTF',
-        lastName: 'TESTL',
-        email: 'testL@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'Kritsanah',
-        lastName: 'Supphasri',
-        email: 'kritsanah@mail.com',
-        image: 'image',
-      },
-      {
-        firstName: 'TESTF',
-        lastName: 'TESTL',
-        email: 'testL@mail.com',
-        image: 'image',
-      },
-    ];
-    this.props.updateUserInfo(data);
+
+  fetchUser(page: number) {
+    return getUserService(page);
+  }
+
+  getUserState(data: User[]) {
+    this.props.updateUserInfo(data, this.state.userStatus);
     this.onLoading();
+  }
+
+  updateUserState(currentData: User[], newData: User[], page: number) {
+    this.setState({isLoading: true});
+    this.props.loadMoreUser(currentData, newData, this.state.userStatus);
     setTimeout(() => {
-      this.loadDataPerPage(this.state.page);
-      // console.log(data);
+      this.setState({
+        user: this.props.userList,
+        page: page,
+      });
+      this.setState({isLoading: false});
     }, 1000);
   }
 
+  async componentDidMount() {
+    const {data} = await this.fetchUser(this.state.page);
+    console.log('page', this.state.userStatus);
+    this.getUserState(data);
+  }
+
   loadDataPerPage(numberPage: number) {
-    const data = this.props.userList.slice(0, numberPage * 10);
+    const data = this.props.userList;
     this.setState({user: data, page: numberPage});
   }
 
   onRefresh() {
     this.setState({isRefreshing: true}, () => {
-      setTimeout(() => {
+      setTimeout(async () => {
         const page = 1;
-        this.loadDataPerPage(page);
-        this.setState({isRefreshing: false});
+        const {data} = await this.fetchUser(page);
+        const userStatus = this.state.user.map((item: User) => {
+          return {id: item.id, isActive: item.isActive};
+        });
+        this.setState({isRefreshing: false, page, userStatus});
+        console.log('user', userStatus);
+        this.getUserState(data);
       }, 1000);
     });
   }
@@ -122,70 +76,17 @@ class UserScreen extends Component<any, any> {
   onLoading() {
     this.setState({isLoading: true}, () => {
       setTimeout(() => {
+        this.setState({user: this.props.userList});
         this.setState({isLoading: false});
       }, 1000);
     });
   }
 
-  _handleLoadMore() {
+  async _handleLoadMore() {
     if (!this.state.isLoading) {
-      // console.log('api load more', this.state.isLoading);
-      this.onLoading();
       const nextPage = this.state.page + 1;
-      this.loadDataPerPage(nextPage);
-
-      //**solution backend
-      // let data2 = [
-      //   {
-      //     firstName: 'Kritsanah',
-      //     lastName: 'Supphasri',
-      //     email: 'kritsanah@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'TESTF',
-      //     lastName: 'TESTL',
-      //     email: 'testL@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'Kritsanah',
-      //     lastName: 'Supphasri',
-      //     email: 'kritsanah@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'TESTF',
-      //     lastName: 'TESTL',
-      //     email: 'testL@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'Kritsanah',
-      //     lastName: 'Supphasri',
-      //     email: 'kritsanah@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'TESTF',
-      //     lastName: 'TESTL',
-      //     email: 'testL@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'Kritsanah',
-      //     lastName: 'Supphasri',
-      //     email: 'kritsanah@mail.com',
-      //     image: 'image',
-      //   },
-      //   {
-      //     firstName: 'TESTF',
-      //     lastName: 'TESTL',
-      //     email: 'testL@mail.com',
-      //     image: 'image',
-      //   },
-      // ];
-      // this.props.addUser(this.props.userList, data2);
+      const {data} = await this.fetchUser(nextPage);
+      this.updateUserState(this.state.user, data, nextPage);
     }
   }
 
@@ -212,16 +113,14 @@ class UserScreen extends Component<any, any> {
           <Image
             style={styles.image}
             source={{
-              uri: 'https://reactnative.dev/img/tiny_logo.png',
+              uri: item.picture,
             }}
           />
         </View>
         <View style={styles.userInfoContainer}>
           <Text>{item.firstName + ' ' + item.lastName} </Text>
           <Text>{item.email}</Text>
-          <Text>
-            Status {index + 1}: {item.isActive ? 'Active' : 'InActive '}
-          </Text>
+          <Text>Status : {item.isActive ? 'Active' : 'InActive '}</Text>
         </View>
         <View style={styles.switchContainer}>
           <Switch
