@@ -49,7 +49,6 @@ class UserScreen extends Component<any, any> {
 
   async componentDidMount() {
     const {data} = await this.fetchUser(this.state.page);
-    console.log('page', this.state.userStatus);
     this.getUserState(data);
   }
 
@@ -67,7 +66,6 @@ class UserScreen extends Component<any, any> {
           return {id: item.id, isActive: item.isActive};
         });
         this.setState({isRefreshing: false, page, userStatus});
-        console.log('user', userStatus);
         this.getUserState(data);
       }, 1000);
     });

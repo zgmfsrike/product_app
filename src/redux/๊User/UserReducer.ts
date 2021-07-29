@@ -10,7 +10,6 @@ export const userReducer = (
   state = initialState,
   action: UserActionTypes,
 ): UserState => {
-  console.log(action.type);
   switch (action.type) {
     case UPDATE_USER_INFO:
       return {...state, user: action.payload};
